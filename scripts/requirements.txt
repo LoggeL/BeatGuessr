@@ -1,0 +1,4 @@
+spotifyscraper
+beautifulsoup4
+requests
+lxml

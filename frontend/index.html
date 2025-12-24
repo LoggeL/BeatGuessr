@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeatGuessr - Das Musik-Ratespiel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Mode Selection Screen -->
+        <div id="mode-screen" class="screen active">
+            <div class="setup-container">
+                <div class="logo">
+                    <span class="logo-icon">🎵</span>
+                    <h1>BeatGuessr</h1>
+                    <p class="tagline">Das ultimative Musik-Ratespiel!</p>
+                </div>
+                
+                <div class="mode-selection">
+                    <h2>Spielmodus wählen</h2>
+                    
+                    <div class="mode-cards">
+                        <button class="mode-card" data-mode="classic">
+                            <span class="mode-icon">🎤</span>
+                            <h3>Classic</h3>
+                            <p>Erkenne Titel & Künstler. Bewerte dich selbst mit +0, +1 oder +2 Punkten. Endlosmodus!</p>
+                        </button>
+                        
+                        <button class="mode-card" data-mode="timeline">
+                            <span class="mode-icon">📅</span>
+                            <h3>Timeline</h3>
+                            <p>Sortiere Songs chronologisch. Wer zuerst 10 Karten sammelt, gewinnt! 2-4 Spieler.</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Screen (Timeline Mode) -->
+        <div id="setup-screen" class="screen">
+            <div class="setup-container">
+                <div class="logo">
+                    <span class="logo-icon">📅</span>
+                    <h1>Timeline Modus</h1>
+                    <p class="tagline">Erkenne die Ära, sortiere die Hits!</p>
+                </div>
+                
+                <div class="setup-form">
+                    <div class="player-count">
+                        <label>Anzahl Spieler</label>
+                        <div class="player-count-buttons">
+                            <button class="count-btn" data-count="2">2</button>
+                            <button class="count-btn active" data-count="3">3</button>
+                            <button class="count-btn" data-count="4">4</button>
+                        </div>
+                    </div>
+                    
+                    <div class="player-names">
+                        <div class="player-input" data-player="0">
+                            <span class="player-color" style="--player-color: var(--accent-pink)"></span>
+                            <input type="text" placeholder="Spieler 1" maxlength="15">
+                        </div>
+                        <div class="player-input" data-player="1">
+                            <span class="player-color" style="--player-color: var(--accent-teal)"></span>
+                            <input type="text" placeholder="Spieler 2" maxlength="15">
+                        </div>
+                        <div class="player-input" data-player="2">
+                            <span class="player-color" style="--player-color: var(--accent-gold)"></span>
+                            <input type="text" placeholder="Spieler 3" maxlength="15">
+                        </div>
+                        <div class="player-input hidden" data-player="3">
+                            <span class="player-color" style="--player-color: var(--accent-purple)"></span>
+                            <input type="text" placeholder="Spieler 4" maxlength="15">
+                        </div>
+                    </div>
+                    
+                    <button id="start-game-btn" class="primary-btn">
+                        <span>Spiel starten</span>
+                        <span class="btn-icon">🎮</span>
+                    </button>
+                    
+                    <button id="back-to-modes-btn" class="secondary-btn">
+                        <span>Zurück zur Modusauswahl</span>
+                    </button>
+                </div>
+                
+                <div class="rules">
+                    <h3>Spielregeln</h3>
+                    <ul>
+                        <li>🎧 Ein Song wird abgespielt (30 Sekunden Vorschau)</li>
+                        <li>📅 Rate, wo der Song zeitlich in deine Sammlung passt</li>
+                        <li>✅ Richtig? Der Song wird deiner Timeline hinzugefügt</li>
+                        <li>❌ Falsch? Der Song wird abgelegt</li>
+                        <li>🏆 Wer zuerst 10 Songs gesammelt hat, gewinnt!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <header class="game-header">
+                <div class="logo-small">🎵 BeatGuessr</div>
+                <div class="current-player">
+                    <span id="current-player-name">Spieler 1</span>
+                    <span class="player-score"><span id="current-player-score">1</span>/10 Karten</span>
+                </div>
+                <div class="all-players-scores" id="all-players-scores"></div>
+            </header>
+
+            <main class="game-main">
+                <!-- Timeline -->
+                <section class="timeline-section">
+                    <h2>Deine Timeline</h2>
+                    <div class="timeline-container">
+                        <div id="timeline" class="timeline">
+                            <!-- Cards will be inserted here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Now Playing -->
+                <section class="now-playing-section">
+                    <div class="now-playing-card" id="now-playing">
+                        <div class="cover-container">
+                            <div class="cover-placeholder">
+                                <span>?</span>
+                            </div>
+                            <img id="current-cover" src="" alt="Album Cover" class="hidden">
+                        </div>
+                        
+                        <div class="song-info">
+                            <h3 id="song-title-hidden">??? - ???</h3>
+                            <div class="audio-player">
+                                <button id="play-pause-btn" class="play-btn">▶</button>
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div id="progress" class="progress"></div>
+                                    </div>
+                                    <span id="time-display">0:00 / 0:30</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Position Selection -->
+                <section class="position-section">
+                    <h2>Wo passt dieser Song?</h2>
+                    <div id="position-buttons" class="position-buttons">
+                        <!-- Position buttons will be generated dynamically -->
+                    </div>
+                    
+                    <button id="lock-guess-btn" class="primary-btn" disabled>
+                        <span>Auswahl bestätigen</span>
+                        <span class="btn-icon">🔒</span>
+                    </button>
+                </section>
+            </main>
+
+            <audio id="audio-player" preload="auto"></audio>
+        </div>
+
+        <!-- Reveal Modal -->
+        <div id="reveal-modal" class="modal">
+            <div class="modal-content reveal-content">
+                <div class="reveal-cover">
+                    <img id="reveal-cover-img" src="" alt="Album Cover">
+                </div>
+                
+                <div class="reveal-song-info">
+                    <h2 id="reveal-title">Song Titel</h2>
+                    <p id="reveal-artist">Künstler</p>
+                </div>
+                
+                <div class="reveal-year">
+                    <span class="year-number" id="reveal-year">1985</span>
+                    <span class="year-context" id="reveal-context">Peak of Synth-Pop</span>
+                </div>
+                
+                <div class="reveal-result" id="reveal-result">
+                    <span class="result-icon">✅</span>
+                    <span class="result-text">Richtig! Karte hinzugefügt</span>
+                </div>
+                
+                <button id="next-turn-btn" class="primary-btn">
+                    <span>Nächster Spieler</span>
+                    <span class="btn-icon">➡️</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Win Screen -->
+        <div id="win-screen" class="screen">
+            <div class="win-container">
+                <div class="confetti" id="confetti"></div>
+                
+                <div class="trophy">🏆</div>
+                <h1 id="winner-name">Spieler 1</h1>
+                <p class="win-subtitle">hat gewonnen!</p>
+                
+                <div class="final-timeline">
+                    <h3>Finale Timeline</h3>
+                    <div id="final-timeline-cards" class="final-cards">
+                        <!-- Final timeline cards -->
+                    </div>
+                </div>
+                
+                <button id="play-again-btn" class="primary-btn">
+                    <span>Nochmal spielen</span>
+                    <span class="btn-icon">🔄</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Classic Mode Screen -->
+        <div id="classic-screen" class="screen">
+            <header class="game-header">
+                <div class="logo-small">🎤 Classic Mode</div>
+                <div class="classic-stats">
+                    <span class="stat-item">
+                        <span class="stat-label">Punkte</span>
+                        <span class="stat-value" id="classic-score">0</span>
+                    </span>
+                    <span class="stat-item">
+                        <span class="stat-label">Songs</span>
+                        <span class="stat-value" id="classic-songs-played">0</span>
+                    </span>
+                </div>
+                <button id="classic-back-btn" class="icon-btn" title="Beenden">✕</button>
+            </header>
+
+            <main class="classic-main">
+                <!-- Now Playing -->
+                <section class="now-playing-section classic-now-playing">
+                    <div class="now-playing-card large">
+                        <div class="cover-container large">
+                            <div class="cover-placeholder">
+                                <span>?</span>
+                            </div>
+                            <img id="classic-cover" src="" alt="Album Cover" class="hidden">
+                        </div>
+                        
+                        <div class="song-info">
+                            <h3 id="classic-song-hidden" class="song-mystery">??? - ???</h3>
+                            <div id="classic-song-revealed" class="song-revealed hidden">
+                                <h2 id="classic-title"></h2>
+                                <p id="classic-artist"></p>
+                                <p class="song-year" id="classic-year"></p>
+                            </div>
+                            <div class="audio-player">
+                                <button id="classic-play-btn" class="play-btn">▶</button>
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div id="classic-progress" class="progress"></div>
+                                    </div>
+                                    <span id="classic-time-display">0:00 / 0:30</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Scoring Section -->
+                <section class="scoring-section" id="scoring-section">
+                    <div id="classic-pre-reveal">
+                        <p class="scoring-hint">Höre den Song und rate Titel & Künstler!</p>
+                        <button id="classic-reveal-btn" class="primary-btn">
+                            <span>Auflösen</span>
+                            <span class="btn-icon">👁️</span>
+                        </button>
+                    </div>
+                    
+                    <div id="classic-post-reveal" class="hidden">
+                        <p class="scoring-hint">Wie viel hast du gewusst?</p>
+                        <div class="score-buttons">
+                            <button class="score-btn" data-points="0">
+                                <span class="score-points">+0</span>
+                                <span class="score-label">Nichts</span>
+                            </button>
+                            <button class="score-btn" data-points="1">
+                                <span class="score-points">+1</span>
+                                <span class="score-label">Titel oder Künstler</span>
+                            </button>
+                            <button class="score-btn" data-points="2">
+                                <span class="score-points">+2</span>
+                                <span class="score-label">Beides!</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <audio id="classic-audio-player" preload="auto"></audio>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/game/SongCard.js"></script>
+    <script src="js/game/Player.js"></script>
+    <script src="js/game/GameState.js"></script>
+    <script src="js/audio/AudioPlayer.js"></script>
+    <script src="js/ui/Timeline.js"></script>
+    <script src="js/ui/SetupScreen.js"></script>
+    <script src="js/ui/GameScreen.js"></script>
+    <script src="js/ui/RevealModal.js"></script>
+    <script src="js/ui/ClassicScreen.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
