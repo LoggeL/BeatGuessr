@@ -7,9 +7,15 @@ class AudioPlayer {
         this.playPauseBtn = document.getElementById('play-pause-btn');
         this.progressBar = document.getElementById('progress');
         this.timeDisplay = document.getElementById('time-display');
+        this.volumeSlider = document.getElementById('volume-slider');
         
         this.isPlaying = false;
         this.duration = 30; // Default 30 seconds
+        
+        // Set initial volume
+        if (this.volumeSlider) {
+            this.audio.volume = this.volumeSlider.value;
+        }
         
         this.setupEventListeners();
     }
@@ -17,6 +23,13 @@ class AudioPlayer {
     setupEventListeners() {
         // Play/pause button
         this.playPauseBtn.addEventListener('click', () => this.togglePlay());
+
+        // Volume slider
+        if (this.volumeSlider) {
+            this.volumeSlider.addEventListener('input', (e) => {
+                this.audio.volume = e.target.value;
+            });
+        }
 
         // Audio events
         this.audio.addEventListener('timeupdate', () => this.updateProgress());

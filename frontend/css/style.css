@@ -661,6 +661,44 @@ body::before {
     color: var(--text-muted);
 }
 
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 100px;
+    margin-left: var(--spacing-sm);
+}
+
+.volume-icon {
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.volume-slider {
+    width: 80px;
+    height: 6px;
+    -webkit-appearance: none;
+    background: var(--bg-card);
+    border-radius: var(--radius-full);
+    outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: var(--glow-purple);
+    background: var(--primary);
+}
+
 /* Position Section */
 .position-section {
     text-align: center;

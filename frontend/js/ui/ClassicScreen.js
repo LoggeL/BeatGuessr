@@ -34,6 +34,12 @@ class ClassicScreen {
         this.revealBtn = document.getElementById('classic-reveal-btn');
         this.backBtn = document.getElementById('classic-back-btn');
         this.audioElement = document.getElementById('classic-audio-player');
+        this.volumeSlider = document.getElementById('classic-volume-slider');
+        
+        // Set initial volume
+        if (this.volumeSlider) {
+            this.audioElement.volume = this.volumeSlider.value;
+        }
         
         this.setupEventListeners();
     }
@@ -41,6 +47,13 @@ class ClassicScreen {
     setupEventListeners() {
         // Play/Pause button
         this.playBtn.addEventListener('click', () => this.togglePlay());
+        
+        // Volume slider
+        if (this.volumeSlider) {
+            this.volumeSlider.addEventListener('input', (e) => {
+                this.audioElement.volume = e.target.value;
+            });
+        }
         
         // Reveal button
         this.revealBtn.addEventListener('click', () => this.revealSong());
