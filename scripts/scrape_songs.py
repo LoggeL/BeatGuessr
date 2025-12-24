@@ -24,9 +24,19 @@ except ImportError:
     HAS_SCRAPER = False
     print("Warning: spotify_scraper not available, will try direct embed scraping")
 
+import os
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 # === Spotify API Configuration ===
-SPOTIFY_CLIENT_ID = "REDACTED_ID"
-SPOTIFY_CLIENT_SECRET = "REDACTED_SECRET"
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+
 
 # === Configuration ===
 START_YEAR = 1960

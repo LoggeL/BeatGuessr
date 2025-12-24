@@ -2,3 +2,5 @@ spotifyscraper
 beautifulsoup4
 requests
 lxml
+python-dotenv
+

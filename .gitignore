@@ -28,3 +28,4 @@ scrape_log.txt
 
 # Local development
 backend/__pycache__/
+.env
