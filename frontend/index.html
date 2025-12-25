@@ -40,19 +40,20 @@
             </div>
         </div>
 
-        <!-- Setup Screen (Timeline Mode) -->
+        <!-- Setup Screen (Generic) -->
         <div id="setup-screen" class="screen">
             <div class="setup-container">
-                <div class="logo">
-                    <span class="logo-icon">📅</span>
-                    <h1>Timeline Modus</h1>
-                    <p class="tagline">Erkenne die Ära, sortiere die Hits!</p>
+                <div class="logo" id="setup-header">
+                    <span class="logo-icon" id="setup-icon">📅</span>
+                    <h1 id="setup-title">Timeline Modus</h1>
+                    <p class="tagline" id="setup-tagline">Erkenne die Ära, sortiere die Hits!</p>
                 </div>
                 
                 <div class="setup-form">
                     <div class="player-count">
                         <label>Anzahl Spieler</label>
                         <div class="player-count-buttons">
+                            <button class="count-btn" data-count="1" id="btn-count-1" style="display: none;">1</button>
                             <button class="count-btn" data-count="2">2</button>
                             <button class="count-btn active" data-count="3">3</button>
                             <button class="count-btn" data-count="4">4</button>

@@ -22,7 +22,7 @@ class BeatGuessrApp {
         
         // Initialize components
         this.audioPlayer = new AudioPlayer();
-        this.setupScreen = new SetupScreen((names) => this.startTimelineGame(names));
+        this.setupScreen = new SetupScreen((names) => this.onGameStart(names));
         this.gameScreen = new GameScreen(this.gameState, this.audioPlayer);
         this.revealModal = new RevealModal();
         this.classicScreen = new ClassicScreen(this.songs, this.audioPlayer);
@@ -279,12 +279,33 @@ class BeatGuessrApp {
      */
     selectMode(mode) {
         this.currentMode = mode;
-        
-        if (mode === 'classic') {
-            this.showScreen('classic');
-        } else if (mode === 'timeline') {
-            this.showScreen('setup');
+        this.showScreen('setup');
+        this.setupScreen.configure(mode);
+    }
+
+    /**
+     * Handle game start from setup screen
+     */
+    onGameStart(playerNames) {
+        if (this.currentMode === 'classic') {
+            this.startClassicGame(playerNames);
+        } else {
+            this.startTimelineGame(playerNames);
         }
+    }
+
+    /**
+     * Start a new Classic game
+     */
+    startClassicGame(playerNames) {
+        if (this.songs.length === 0) {
+            alert('Keine Songs verfügbar. Bitte führe zuerst den Scraper aus.');
+            return;
+        }
+
+        // Initialize classic game
+        this.classicScreen.start(playerNames);
+        this.showScreen('classic');
     }
 
     /**

@@ -10,8 +10,45 @@ class SetupScreen {
         this.onStart = onStart;
         
         this.playerCount = 3;
+        this.mode = 'timeline'; // 'timeline' or 'classic'
         
         this.setupEventListeners();
+    }
+
+    /**
+     * Configure screen for a specific mode
+     */
+    configure(mode) {
+        this.mode = mode;
+        
+        const icon = document.getElementById('setup-icon');
+        const title = document.getElementById('setup-title');
+        const tagline = document.getElementById('setup-tagline');
+        const btn1 = document.getElementById('btn-count-1');
+        
+        if (mode === 'classic') {
+            icon.textContent = '🎤';
+            title.textContent = 'Classic Modus';
+            tagline.textContent = 'Erkenne Titel & Künstler!';
+            
+            // Enable 1 player option
+            btn1.style.display = 'block';
+            
+            // Default to 1 player if switching to classic
+            // or keep current if valid
+            if (this.playerCount < 1) this.setPlayerCount(1);
+            
+        } else {
+            icon.textContent = '📅';
+            title.textContent = 'Timeline Modus';
+            tagline.textContent = 'Erkenne die Ära, sortiere die Hits!';
+            
+            // Disable 1 player option
+            btn1.style.display = 'none';
+            
+            // Ensure at least 2 players
+            if (this.playerCount < 2) this.setPlayerCount(2);
+        }
     }
 
     setupEventListeners() {

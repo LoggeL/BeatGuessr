@@ -8,6 +8,7 @@ class Player {
         this.name = name;
         this.color = color;
         this.timeline = []; // Array of SongCard objects, sorted by year
+        this.points = 0; // For Classic mode
         this.isLocal = true; // For future multiplayer: false for remote players
     }
 
@@ -16,6 +17,13 @@ class Player {
      */
     get score() {
         return this.timeline.length;
+    }
+
+    /**
+     * Add points (Classic mode)
+     */
+    addPoints(p) {
+        this.points += p;
     }
 
     /**
