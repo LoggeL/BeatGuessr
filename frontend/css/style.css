@@ -1166,6 +1166,12 @@ body::before {
     gap: var(--spacing-xl);
 }
 
+.multi-stats {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
 .stat-item {
     display: flex;
     flex-direction: column;
