@@ -251,6 +251,7 @@ body::before {
 
 .player-input input {
     flex: 1;
+    min-width: 0; /* Allows input to shrink below default width */
     padding: var(--spacing-md);
     font-size: 1rem;
     font-family: inherit;
@@ -392,6 +393,13 @@ body::before {
 .all-players-scores {
     display: flex;
     gap: var(--spacing-md);
+    overflow-x: auto; /* Allow horizontal scrolling on small screens */
+    max-width: 100%;
+    padding-bottom: var(--spacing-xs); /* Space for scrollbar if visible */
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+.all-players-scores::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
 }
 
 .score-pill {
@@ -402,6 +410,8 @@ body::before {
     background: var(--bg-card);
     border-radius: var(--radius-full);
     font-size: 0.85rem;
+    white-space: nowrap; /* Prevent text wrapping inside pill */
+    flex-shrink: 0; /* Prevent pill from shrinking */
 }
 
 .score-pill .score-color {
@@ -994,6 +1004,10 @@ body::before {
     .setup-container {
         padding: var(--spacing-lg);
     }
+
+    .setup-form {
+        padding: var(--spacing-lg);
+    }
     
     .logo h1 {
         font-size: 2.5rem;
@@ -1026,21 +1040,68 @@ body::before {
 }
 
 @media (max-width: 480px) {
+    .setup-container {
+        padding: var(--spacing-md);
+    }
+
+    .setup-form {
+        padding: var(--spacing-md);
+    }
+
     .logo h1 {
         font-size: 2rem;
     }
     
     .timeline {
         justify-content: flex-start;
+        padding: var(--spacing-sm);
+        gap: var(--spacing-sm);
     }
     
     .song-card {
-        width: 90px;
+        width: 80px; /* Reduced further */
+        padding: var(--spacing-xs);
+    }
+
+    .song-card .card-year {
+        font-size: 1.1rem;
+    }
+
+    .position-slot {
+        width: 60px; /* Reduced */
+        height: 120px;
+    }
+
+    .timeline-arrow {
+        font-size: 1rem; /* Smaller arrows */
     }
     
     .position-btn {
         font-size: 0.8rem;
         padding: var(--spacing-xs) var(--spacing-md);
+    }
+
+    .game-header {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+
+    .logo-small {
+        font-size: 1rem;
+    }
+
+    #current-player-name {
+        font-size: 1rem;
+    }
+
+    /* Ensure header items don't wrap awkwardly */
+    .game-header > * {
+        flex-shrink: 0;
+    }
+
+    .all-players-scores {
+        width: 100%; /* Force full width for scrolling area */
+        order: 3; /* Ensure it moves to bottom if wrapping occurs */
     }
 }
 
