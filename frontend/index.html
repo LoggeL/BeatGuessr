@@ -241,14 +241,17 @@
             <header class="game-header">
                 <div class="logo-small">🎤 Classic Mode</div>
                 <div class="classic-stats">
-                    <span class="stat-item">
-                        <span class="stat-label">Punkte</span>
-                        <span class="stat-value" id="classic-score">0</span>
-                    </span>
-                    <span class="stat-item">
-                        <span class="stat-label">Songs</span>
-                        <span class="stat-value" id="classic-songs-played">0</span>
-                    </span>
+                    <div id="classic-single-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">Punkte</span>
+                            <span class="stat-value" id="classic-score">0</span>
+                        </span>
+                        <span class="stat-item">
+                            <span class="stat-label">Songs</span>
+                            <span class="stat-value" id="classic-songs-played">0</span>
+                        </span>
+                    </div>
+                    <div id="classic-multi-stats" class="multi-stats hidden"></div>
                 </div>
                 <button id="classic-back-btn" class="icon-btn" title="Beenden">✕</button>
             </header>
