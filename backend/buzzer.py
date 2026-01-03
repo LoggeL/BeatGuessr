@@ -5,6 +5,7 @@ BeatGuessr Buzzer Mode - WebSocket handlers for real-time multiplayer
 import random
 import string
 import time
+from flask import request
 from flask_socketio import emit, join_room, leave_room
 
 # Room storage
@@ -81,11 +82,11 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("connect")
     def handle_connect():
-        print(f"Client connected: {socketio.request.sid}")
+        print(f"Client connected: {request.sid}")
 
     @socketio.on("disconnect")
     def handle_disconnect():
-        sid = socketio.request.sid
+        sid = request.sid
         print(f"Client disconnected: {sid}")
 
         # Check if this was a player in a room
@@ -113,7 +114,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("create_room")
     def handle_create_room(data):
-        sid = socketio.request.sid
+        sid = request.sid
         max_score = data.get("maxScore", 10)
 
         room_code = generate_room_code()
@@ -143,7 +144,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("join_room")
     def handle_join_room(data):
-        sid = socketio.request.sid
+        sid = request.sid
         room_code = data.get("roomCode", "").upper()
         player_name = data.get("playerName", "").strip()
 
@@ -217,7 +218,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("leave_room")
     def handle_leave_room():
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
@@ -242,7 +243,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("start_game")
     def handle_start_game():
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
@@ -272,7 +273,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("start_round")
     def handle_start_round():
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
@@ -328,7 +329,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("buzz")
     def handle_buzz():
-        sid = socketio.request.sid
+        sid = request.sid
         buzz_time = time.time()
 
         if sid not in player_sessions:
@@ -377,7 +378,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("judge")
     def handle_judge(data):
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
@@ -468,7 +469,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("skip_round")
     def handle_skip_round():
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
@@ -496,7 +497,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("end_game")
     def handle_end_game():
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
@@ -528,7 +529,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("host_rejoin")
     def handle_host_rejoin(data):
-        sid = socketio.request.sid
+        sid = request.sid
         room_code = data.get("roomCode", "").upper()
 
         room = rooms.get(room_code)
@@ -551,7 +552,7 @@ def register_buzzer_events(socketio, songs_data):
 
     @socketio.on("get_room_state")
     def handle_get_room_state():
-        sid = socketio.request.sid
+        sid = request.sid
 
         if sid not in player_sessions:
             return
