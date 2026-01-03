@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  beatguessr:
+    build: .
+    container_name: beatguessr
+    restart: unless-stopped
+    ports:
+      - "3000:5000"
+    networks:
+      - proxy
+    environment:
+      - FLASK_ENV=production
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+networks:
+  proxy:
+    external: true

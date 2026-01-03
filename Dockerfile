@@ -1,24 +1,19 @@
-FROM nginx:alpine
+FROM python:3.12-slim
 
-# Copy frontend files to nginx html directory
-COPY frontend/ /usr/share/nginx/html/
+WORKDIR /app
 
-# Copy custom nginx config for SPA routing
-RUN echo 'server { \
-    listen 3000; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ { \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
-    } \
-    gzip on; \
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript; \
-}' > /etc/nginx/conf.d/default.conf
+# Install dependencies
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 3000
+# Copy application code
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+COPY data/ ./data/
 
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /app/backend
+
+EXPOSE 5000
+
+# Use eventlet for WebSocket support
+CMD ["python", "-c", "from app import app, socketio; socketio.run(app, host='0.0.0.0', port=5000)"]

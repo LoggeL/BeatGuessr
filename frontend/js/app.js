@@ -10,6 +10,9 @@ class BeatGuessrApp {
         this.gameScreen = null;
         this.revealModal = null;
         this.classicScreen = null;
+        this.buzzerHostScreen = null;
+        this.buzzerPlayerScreen = null;
+        this.socket = null;
         this.songs = [];
         this.currentMode = null;
         
@@ -20,12 +23,19 @@ class BeatGuessrApp {
         // Load songs from API
         await this.loadSongs();
         
+        // Initialize Socket.io connection
+        this.initSocket();
+        
         // Initialize components
         this.audioPlayer = new AudioPlayer();
         this.setupScreen = new SetupScreen((names) => this.onGameStart(names));
         this.gameScreen = new GameScreen(this.gameState, this.audioPlayer);
         this.revealModal = new RevealModal();
         this.classicScreen = new ClassicScreen(this.songs, this.audioPlayer);
+        
+        // Buzzer screens (initialized after socket is ready)
+        this.buzzerHostScreen = new BuzzerHostScreen(this.socket, this.songs, this.audioPlayer);
+        this.buzzerPlayerScreen = new BuzzerPlayerScreen(this.socket);
         
         // Setup event listeners
         this.setupEventListeners();
@@ -34,6 +44,32 @@ class BeatGuessrApp {
         this.showScreen('mode');
         
         console.log('BeatGuessr initialized!');
+    }
+
+    /**
+     * Initialize Socket.io connection
+     */
+    initSocket() {
+        // Connect to the server (same host for production, or specify dev server)
+        const socketUrl = window.location.origin;
+        this.socket = io(socketUrl, {
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000
+        });
+        
+        this.socket.on('connect', () => {
+            console.log('Socket connected:', this.socket.id);
+        });
+        
+        this.socket.on('disconnect', () => {
+            console.log('Socket disconnected');
+        });
+        
+        this.socket.on('connect_error', (error) => {
+            console.log('Socket connection error:', error);
+        });
     }
 
     /**
@@ -246,9 +282,27 @@ class BeatGuessrApp {
             this.showScreen('mode');
         });
 
+        // Join room button
+        document.getElementById('join-room-btn').addEventListener('click', () => {
+            this.joinBuzzerRoom();
+        });
+        
+        // Allow enter key to join
+        document.getElementById('join-room-code').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.joinBuzzerRoom();
+        });
+        document.getElementById('join-player-name').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.joinBuzzerRoom();
+        });
+
         // Exit classic mode event
         window.addEventListener('exitClassicMode', () => {
             this.classicScreen.hide();
+            this.showScreen('mode');
+        });
+        
+        // Exit buzzer mode event
+        window.addEventListener('exitBuzzerMode', () => {
             this.showScreen('mode');
         });
 
@@ -279,8 +333,45 @@ class BeatGuessrApp {
      */
     selectMode(mode) {
         this.currentMode = mode;
-        this.showScreen('setup');
-        this.setupScreen.configure(mode);
+        
+        if (mode === 'buzzer') {
+            // Buzzer mode - host flow
+            this.startBuzzerHost();
+        } else {
+            // Classic or Timeline - show setup screen
+            this.showScreen('setup');
+            this.setupScreen.configure(mode);
+        }
+    }
+    
+    /**
+     * Start as buzzer host
+     */
+    startBuzzerHost() {
+        this.buzzerHostScreen.show();
+        this.showScreen('buzzer-host');
+    }
+    
+    /**
+     * Join a buzzer room as player
+     */
+    joinBuzzerRoom() {
+        const roomCode = document.getElementById('join-room-code').value.trim().toUpperCase();
+        const playerName = document.getElementById('join-player-name').value.trim();
+        
+        if (!roomCode) {
+            alert('Bitte gib einen Raumcode ein.');
+            return;
+        }
+        
+        if (!playerName) {
+            alert('Bitte gib deinen Namen ein.');
+            return;
+        }
+        
+        this.buzzerPlayerScreen.joinRoom(roomCode, playerName);
+        this.buzzerPlayerScreen.show();
+        this.showScreen('buzzer-player');
     }
 
     /**
@@ -399,6 +490,12 @@ class BeatGuessrApp {
                 break;
             case 'classic':
                 this.classicScreen.show();
+                break;
+            case 'buzzer-host':
+                document.getElementById('buzzer-host-screen').classList.add('active');
+                break;
+            case 'buzzer-player':
+                document.getElementById('buzzer-player-screen').classList.add('active');
                 break;
             case 'win':
                 document.getElementById('win-screen').classList.add('active');

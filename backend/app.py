@@ -1,9 +1,10 @@
 """
-BeatGuessr Backend - Flask API
+BeatGuessr Backend - Flask API with WebSocket support
 """
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from flask_socketio import SocketIO
 import json
 import random
 import uuid
@@ -12,6 +13,9 @@ from datetime import datetime
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
 CORS(app)
+
+# Initialize SocketIO with eventlet for better performance
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 # Load song data
 DATA_FILE = Path(__file__).parent.parent / "data" / "songs.json"
@@ -258,7 +262,12 @@ def get_song(song_id):
 # Initialize
 load_songs()
 
+# Register buzzer WebSocket events
+from buzzer import register_buzzer_events
+
+register_buzzer_events(socketio, songs_data)
+
 if __name__ == "__main__":
-    print("Starting BeatGuessr Backend...")
+    print("Starting BeatGuessr Backend with WebSocket support...")
     print(f"Songs loaded: {len(songs_data.get('songs', []))}")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    socketio.run(app, debug=True, host="0.0.0.0", port=5000)

@@ -29,7 +29,7 @@
                         <button class="mode-card" data-mode="classic">
                             <span class="mode-icon">🎤</span>
                             <h3>Classic</h3>
-                            <p>Erkenne Titel & Künstler. Bewerte dich selbst mit +0, +1 oder +2 Punkten. Endlosmodus!</p>
+                            <p>Erkenne Titel &amp; Künstler. Bewerte dich selbst mit +0, +1 oder +2 Punkten. Endlosmodus!</p>
                         </button>
                         
                         <button class="mode-card" data-mode="timeline">
@@ -37,7 +37,28 @@
                             <h3>Timeline</h3>
                             <p>Sortiere Songs chronologisch. Wer zuerst 10 Karten sammelt, gewinnt! 2-4 Spieler.</p>
                         </button>
+                        
+                        <button class="mode-card" data-mode="buzzer">
+                            <span class="mode-icon">🔔</span>
+                            <h3>Buzzer</h3>
+                            <p>Multiplayer auf mehreren Geräten! Wer zuerst buzzert, darf raten. Falsch? Gesperrt!</p>
+                        </button>
                     </div>
+                    
+                    <div class="join-section">
+                        <div class="join-divider">
+                            <span>oder einem Spiel beitreten</span>
+                        </div>
+                        <div class="join-form">
+                            <input type="text" id="join-room-code" placeholder="Raumcode" maxlength="6" class="room-code-input">
+                            <input type="text" id="join-player-name" placeholder="Dein Name" maxlength="15" class="player-name-input">
+                            <button id="join-room-btn" class="primary-btn join-btn">
+                                <span>Beitreten</span>
+                                <span class="btn-icon">→</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -325,7 +346,225 @@
 
             <audio id="classic-audio-player" preload="auto"></audio>
         </div>
+
+        <!-- Buzzer Host Screen -->
+        <div id="buzzer-host-screen" class="screen">
+            <header class="game-header">
+                <div class="logo-small">🔔 Buzzer Mode</div>
+                <div class="room-info">
+                    <span class="room-label">Raum:</span>
+                    <span class="room-code" id="host-room-code">------</span>
+                </div>
+                <button id="buzzer-host-back-btn" class="icon-btn" title="Beenden">✕</button>
+            </header>
+
+            <!-- Host Lobby (before game starts) -->
+            <div id="buzzer-host-lobby" class="buzzer-lobby">
+                <div class="lobby-container">
+                    <div class="lobby-header">
+                        <h2>Warte auf Spieler...</h2>
+                        <p>Teile diesen Code mit deinen Mitspielern:</p>
+                        <div class="room-code-display" id="host-room-code-large">------</div>
+                    </div>
+                    
+                    <div class="lobby-settings">
+                        <label>Punkte zum Gewinnen</label>
+                        <div class="score-selector">
+                            <button class="score-option" data-score="5">5</button>
+                            <button class="score-option active" data-score="10">10</button>
+                            <button class="score-option" data-score="15">15</button>
+                            <button class="score-option" data-score="20">20</button>
+                        </div>
+                    </div>
+                    
+                    <div class="lobby-players">
+                        <h3>Spieler (<span id="host-player-count">0</span>)</h3>
+                        <div id="host-player-list" class="player-list">
+                            <p class="no-players">Noch keine Spieler beigetreten...</p>
+                        </div>
+                    </div>
+                    
+                    <button id="start-buzzer-game-btn" class="primary-btn" disabled>
+                        <span>Spiel starten</span>
+                        <span class="btn-icon">🎮</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Host Game (during game) -->
+            <div id="buzzer-host-game" class="buzzer-game hidden">
+                <div class="host-game-container">
+                    <!-- Now Playing -->
+                    <section class="host-now-playing">
+                        <div class="now-playing-card large">
+                            <div class="cover-container large">
+                                <div class="cover-placeholder">
+                                    <span>?</span>
+                                </div>
+                                <img id="buzzer-host-cover" src="" alt="Album Cover" class="hidden">
+                            </div>
+                            
+                            <div class="song-info">
+                                <div id="buzzer-host-song-info" class="song-revealed">
+                                    <h2 id="buzzer-host-title">Warte auf Song...</h2>
+                                    <p id="buzzer-host-artist"></p>
+                                    <p class="song-year" id="buzzer-host-year"></p>
+                                </div>
+                                <div class="audio-player">
+                                    <button id="buzzer-host-play-btn" class="play-btn">▶</button>
+                                    <div class="progress-container">
+                                        <div class="progress-bar">
+                                            <div id="buzzer-host-progress" class="progress"></div>
+                                        </div>
+                                        <span id="buzzer-host-time-display">0:00 / 0:30</span>
+                                    </div>
+                                    <div class="volume-control">
+                                        <span class="volume-icon">🔊</span>
+                                        <input type="range" id="buzzer-host-volume" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Buzzer Queue -->
+                    <section class="buzzer-queue-section">
+                        <div id="buzzer-queue-container" class="buzzer-queue-container">
+                            <div id="buzzer-waiting" class="buzzer-waiting">
+                                <p>Warte auf Buzzer...</p>
+                            </div>
+                            <div id="buzzer-current" class="buzzer-current hidden">
+                                <div class="current-buzzer-name" id="current-buzzer-name">---</div>
+                                <div class="judge-buttons">
+                                    <div class="judge-row">
+                                        <label class="judge-checkbox">
+                                            <input type="checkbox" id="judge-artist-correct">
+                                            <span class="checkmark">✓</span>
+                                            <span>Künstler richtig</span>
+                                        </label>
+                                        <label class="judge-checkbox">
+                                            <input type="checkbox" id="judge-title-correct">
+                                            <span class="checkmark">✓</span>
+                                            <span>Titel richtig</span>
+                                        </label>
+                                    </div>
+                                    <button id="judge-submit-btn" class="primary-btn">
+                                        <span>Bewerten</span>
+                                        <span class="btn-icon">⚖️</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="buzzer-queue-list" class="buzzer-queue-list hidden">
+                                <span class="queue-label">Warteschlange:</span>
+                                <div id="queue-names"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Host Controls -->
+                    <section class="host-controls">
+                        <button id="next-round-btn" class="primary-btn">
+                            <span>Nächster Song</span>
+                            <span class="btn-icon">⏭️</span>
+                        </button>
+                        <button id="skip-round-btn" class="secondary-btn">
+                            <span>Überspringen</span>
+                        </button>
+                        <button id="end-buzzer-game-btn" class="secondary-btn danger">
+                            <span>Spiel beenden</span>
+                        </button>
+                    </section>
+
+                    <!-- Scoreboard -->
+                    <section class="host-scoreboard">
+                        <h3>Punktestand</h3>
+                        <div id="host-scoreboard" class="scoreboard"></div>
+                    </section>
+                </div>
+            </div>
+
+            <audio id="buzzer-host-audio" preload="auto"></audio>
+        </div>
+
+        <!-- Buzzer Player Screen -->
+        <div id="buzzer-player-screen" class="screen">
+            <header class="game-header">
+                <div class="logo-small">🔔 Buzzer Mode</div>
+                <div class="player-info">
+                    <span id="buzzer-player-name">Spieler</span>
+                    <span class="player-points"><span id="buzzer-player-score">0</span> Punkte</span>
+                </div>
+                <div class="room-info-small">
+                    <span id="player-room-code">------</span>
+                </div>
+            </header>
+
+            <!-- Player Lobby -->
+            <div id="buzzer-player-lobby" class="buzzer-lobby">
+                <div class="lobby-container player-lobby">
+                    <div class="lobby-header">
+                        <h2>Warte auf Spielstart...</h2>
+                        <p>Der Host startet das Spiel in Kürze.</p>
+                    </div>
+                    
+                    <div class="lobby-players">
+                        <h3>Spieler im Raum</h3>
+                        <div id="player-lobby-list" class="player-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player Game -->
+            <div id="buzzer-player-game" class="buzzer-game hidden">
+                <div class="player-game-container">
+                    <!-- Buzzer Button -->
+                    <section class="buzzer-section">
+                        <div id="buzzer-status" class="buzzer-status">
+                            <span id="buzzer-status-text">Warte auf Runde...</span>
+                        </div>
+                        <button id="buzzer-btn" class="buzzer-btn" disabled>
+                            <span class="buzzer-icon">🔔</span>
+                            <span class="buzzer-text">BUZZ!</span>
+                        </button>
+                        <div id="buzzer-feedback" class="buzzer-feedback hidden"></div>
+                    </section>
+
+                    <!-- Player Scoreboard -->
+                    <section class="player-scoreboard">
+                        <div id="player-scoreboard" class="scoreboard"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buzzer Game Over Modal -->
+        <div id="buzzer-gameover-modal" class="modal">
+            <div class="modal-content">
+                <div class="trophy">🏆</div>
+                <h2 id="buzzer-winner-name">Gewinner</h2>
+                <p class="win-subtitle">hat gewonnen!</p>
+                
+                <div class="final-scores">
+                    <h3>Endstand</h3>
+                    <div id="buzzer-final-scores" class="final-scores-list"></div>
+                </div>
+                
+                <button id="buzzer-play-again-btn" class="primary-btn">
+                    <span>Zurück zum Menü</span>
+                    <span class="btn-icon">🏠</span>
+                </button>
+            </div>
+        </div>
     </div>
+
+    <!-- Socket.io -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Sound Effects -->
+    <audio id="sound-buzz" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbsGsePT5LodsAAABJQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ==" preload="auto"></audio>
+    <audio id="sound-correct" src="data:audio/wav;base64,UklGRl9CAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTs=" preload="auto"></audio>
+    <audio id="sound-wrong" src="data:audio/wav;base64,UklGRl9CAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTs=" preload="auto"></audio>
+    <audio id="sound-locked" src="data:audio/wav;base64,UklGRl9CAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTs=" preload="auto"></audio>
 
     <!-- Scripts -->
     <script src="js/game/SongCard.js"></script>
@@ -337,6 +576,8 @@
     <script src="js/ui/GameScreen.js"></script>
     <script src="js/ui/RevealModal.js"></script>
     <script src="js/ui/ClassicScreen.js"></script>
+    <script src="js/ui/BuzzerHostScreen.js"></script>
+    <script src="js/ui/BuzzerPlayerScreen.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
