@@ -100,6 +100,8 @@ html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -145,6 +147,8 @@ body::after {
 #app {
     min-height: 100vh;
     position: relative;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 /* ================================
@@ -154,6 +158,8 @@ body::after {
 .screen {
     display: none;
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
     animation: screenFadeIn 0.5s var(--ease-out);
 }
 
@@ -177,26 +183,27 @@ body::after {
    ================================ */
 
 .setup-container {
-    max-width: 480px;
+    width: min(calc(100% - (2 * var(--spacing-xl))), 1040px);
+    max-width: 1040px;
     margin: 0 auto;
-    padding: var(--spacing-xl);
-    min-height: 100vh;
+    padding: clamp(1rem, 3vh, 2rem) 0;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: var(--spacing-2xl);
+    gap: var(--spacing-xl);
 }
 
 /* Logo */
 .logo {
     text-align: center;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 0;
 }
 
 .logo-icon {
-    font-size: 4.5rem;
+    font-size: clamp(3rem, 7vh, 4.25rem);
     display: block;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 0;
     animation: logoFloat 4s ease-in-out infinite;
     filter: drop-shadow(0 8px 24px rgba(139, 92, 246, 0.3));
 }
@@ -207,7 +214,7 @@ body::after {
 }
 
 .logo h1 {
-    font-size: 3.25rem;
+    font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     background: linear-gradient(135deg, var(--accent-pink) 0%, var(--primary) 50%, var(--accent-teal) 100%);
@@ -234,29 +241,33 @@ body::after {
 /* Mode Selection */
 .mode-selection {
     text-align: center;
+    width: 100%;
 }
 
 .mode-selection h2 {
     font-size: 1rem;
     font-weight: 500;
     color: var(--text-muted);
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
     text-transform: uppercase;
     letter-spacing: 0.15em;
 }
 
 .mode-cards {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-md);
 }
 
 .mode-card {
     position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-2xl);
-    padding: var(--spacing-xl) var(--spacing-lg);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    width: 100%;
+    min-width: 0;
+    min-height: 220px;
     cursor: pointer;
     transition: all var(--transition-normal);
     text-align: center;
@@ -289,9 +300,9 @@ body::after {
 }
 
 .mode-card .mode-icon {
-    font-size: 3rem;
+    font-size: 2.75rem;
     display: block;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
     transition: transform var(--transition-normal);
 }
 
@@ -313,7 +324,8 @@ body::after {
 .mode-card p {
     color: var(--text-secondary);
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 /* Setup Form */
@@ -325,6 +337,19 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xl);
+}
+
+#setup-screen .setup-container {
+    max-width: 560px;
+    gap: var(--spacing-md);
+}
+
+#setup-screen .logo-icon {
+    font-size: clamp(2.5rem, 6vh, 3.5rem);
+}
+
+#setup-screen .logo h1 {
+    font-size: clamp(2.3rem, 5vw, 3.6rem);
 }
 
 .player-count label {
@@ -1377,17 +1402,20 @@ body::after {
 .classic-main {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: var(--spacing-xl);
-    gap: var(--spacing-2xl);
+    gap: var(--spacing-xl);
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .classic-now-playing .now-playing-card.large {
     flex-direction: column;
     max-width: 400px;
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-xl);
 }
 
 .cover-container.large {
@@ -1429,7 +1457,7 @@ body::after {
 
 .scoring-section {
     text-align: center;
-    max-width: 500px;
+    max-width: 420px;
     width: 100%;
 }
 
@@ -1551,8 +1579,10 @@ body::after {
 
 @media (max-width: 768px) {
     .setup-container {
-        padding: var(--spacing-lg);
-        gap: var(--spacing-xl);
+        width: calc(100% - (2 * var(--spacing-lg)));
+        max-width: 100%;
+        padding: var(--spacing-lg) 0;
+        gap: var(--spacing-lg);
     }
 
     .setup-form {
@@ -1560,7 +1590,7 @@ body::after {
     }
     
     .logo h1 {
-        font-size: 2.5rem;
+        font-size: 2.7rem;
     }
     
     .logo-icon {
@@ -1610,11 +1640,13 @@ body::after {
     }
 
     .mode-cards {
+        grid-template-columns: 1fr;
         gap: var(--spacing-md);
     }
     
     .mode-card {
         padding: var(--spacing-lg);
+        min-height: 0;
     }
     
     .mode-card .mode-icon {
@@ -1623,6 +1655,18 @@ body::after {
     
     .classic-stats {
         gap: var(--spacing-lg);
+    }
+
+    .classic-main {
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: var(--spacing-lg);
+        gap: var(--spacing-lg);
+    }
+
+    .classic-now-playing .now-playing-card.large {
+        max-width: 100%;
+        width: 100%;
     }
     
     .score-buttons {
@@ -1638,7 +1682,11 @@ body::after {
 
 @media (max-width: 480px) {
     .setup-container {
-        padding: var(--spacing-md);
+        width: calc(100% - (2 * var(--spacing-md)));
+        padding: var(--spacing-md) 0;
+        justify-content: flex-start;
+        gap: var(--spacing-md);
+        overflow-x: hidden;
     }
 
     .setup-form {
@@ -1646,15 +1694,57 @@ body::after {
     }
 
     .logo h1 {
-        font-size: 2rem;
+        font-size: clamp(2.15rem, 12vw, 2.7rem);
     }
 
     .logo-icon {
-        font-size: 3rem;
+        font-size: 3.1rem;
     }
 
     .tagline {
         font-size: 0.95rem;
+    }
+
+    .mode-selection h2 {
+        margin-bottom: var(--spacing-md);
+        font-size: 0.82rem;
+    }
+
+    .mode-card {
+        padding: var(--spacing-md);
+        border-radius: var(--radius-xl);
+    }
+
+    .mode-card .mode-icon {
+        font-size: 2rem;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .mode-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .mode-card p {
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+
+    .join-section {
+        margin-top: var(--spacing-md);
+    }
+
+    .join-form {
+        flex-direction: column;
+    }
+
+    .join-divider span {
+        white-space: normal;
+    }
+
+    .room-code-input,
+    .player-name-input,
+    .join-btn {
+        width: 100%;
     }
     
     .timeline {
