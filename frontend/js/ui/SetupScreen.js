@@ -7,6 +7,7 @@ class SetupScreen {
         this.playerCountButtons = document.querySelectorAll('.count-btn');
         this.playerInputs = document.querySelectorAll('.player-input');
         this.startButton = document.getElementById('start-game-btn');
+        this.rulesList = document.getElementById('setup-rules-list');
         this.onStart = onStart;
         
         this.playerCount = 3;
@@ -33,10 +34,14 @@ class SetupScreen {
             
             // Enable 1 player option
             btn1.style.display = 'block';
-            
-            // Default to 1 player if switching to classic
-            // or keep current if valid
-            if (this.playerCount < 1) this.setPlayerCount(1);
+            this.setPlayerCount(1);
+            this.updateRules([
+                '🎧 Ein Song wird abgespielt',
+                '🎤 Rate Titel und Künstler',
+                '✅ Vergib +1 für Künstler und +1 für Titel',
+                '🔁 Danach kommt direkt der nächste Song',
+                '🏆 Spiel so lange, wie ihr wollt'
+            ]);
             
         } else {
             icon.textContent = '📅';
@@ -46,9 +51,25 @@ class SetupScreen {
             // Disable 1 player option
             btn1.style.display = 'none';
             
-            // Ensure at least 2 players
-            if (this.playerCount < 2) this.setPlayerCount(2);
+            this.setPlayerCount(Math.max(2, this.playerCount));
+            this.updateRules([
+                '🎧 Ein Song wird abgespielt (30 Sekunden Vorschau)',
+                '📅 Rate, wo der Song zeitlich in deine Sammlung passt',
+                '✅ Richtig? Der Song wird deiner Timeline hinzugefügt',
+                '❌ Falsch? Der Song wird abgelegt',
+                '🏆 Wer zuerst 10 Songs gesammelt hat, gewinnt!'
+            ]);
         }
+    }
+
+    updateRules(rules) {
+        if (!this.rulesList) return;
+        this.rulesList.innerHTML = '';
+        rules.forEach(rule => {
+            const li = document.createElement('li');
+            li.textContent = rule;
+            this.rulesList.appendChild(li);
+        });
     }
 
     setupEventListeners() {

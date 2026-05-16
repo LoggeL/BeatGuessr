@@ -59,6 +59,8 @@ class BuzzerPlayerScreen {
     }
     
     setupSocketListeners() {
+        if (!this.socket) return;
+
         this.socket.on('joined_room', (data) => {
             this.roomCode = data.roomCode;
             this.playerName = data.playerName;
@@ -118,6 +120,7 @@ class BuzzerPlayerScreen {
     }
     
     joinRoom(roomCode, playerName) {
+        if (!this.socket || !this.socket.connected) return;
         this.socket.emit('join_room', {
             roomCode: roomCode.toUpperCase(),
             playerName: playerName
@@ -241,6 +244,7 @@ class BuzzerPlayerScreen {
             return;
         }
         
+        if (!this.socket || !this.socket.connected) return;
         this.hasBuzzed = true;
         this.socket.emit('buzz');
         this.playSound('buzz');

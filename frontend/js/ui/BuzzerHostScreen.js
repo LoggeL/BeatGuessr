@@ -102,6 +102,8 @@ class BuzzerHostScreen {
     }
     
     setupSocketListeners() {
+        if (!this.socket) return;
+
         this.socket.on('room_created', (data) => {
             this.roomCode = data.roomCode;
             this.maxScore = data.maxScore;
@@ -139,6 +141,7 @@ class BuzzerHostScreen {
     }
     
     createRoom() {
+        if (!this.socket || !this.socket.connected) return;
         this.socket.emit('create_room', { maxScore: this.maxScore });
     }
     
@@ -204,6 +207,7 @@ class BuzzerHostScreen {
     }
     
     startGame() {
+        if (!this.socket || !this.socket.connected) return;
         this.socket.emit('start_game');
         this.gameStarted = true;
         this.lobby.classList.add('hidden');
@@ -211,6 +215,7 @@ class BuzzerHostScreen {
     }
     
     startRound() {
+        if (!this.socket || !this.socket.connected) return;
         this.socket.emit('start_round');
         this.judgeArtist.checked = false;
         this.judgeTitle.checked = false;
@@ -265,6 +270,7 @@ class BuzzerHostScreen {
     }
     
     submitJudgement() {
+        if (!this.socket || !this.socket.connected) return;
         const correctArtist = this.judgeArtist.checked;
         const correctTitle = this.judgeTitle.checked;
         
@@ -297,6 +303,7 @@ class BuzzerHostScreen {
     }
     
     skipRound() {
+        if (!this.socket || !this.socket.connected) return;
         this.socket.emit('skip_round');
     }
     
@@ -342,7 +349,9 @@ class BuzzerHostScreen {
             if (!confirm('Spiel wirklich verlassen?')) return;
         }
         this.stopAudio();
-        this.socket.emit('leave_room');
+        if (this.socket && this.socket.connected) {
+            this.socket.emit('leave_room');
+        }
         this.hide();
         window.dispatchEvent(new CustomEvent('exitBuzzerMode'));
     }

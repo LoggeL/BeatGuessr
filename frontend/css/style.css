@@ -194,10 +194,21 @@ body::after {
     gap: var(--spacing-xl);
 }
 
+#mode-screen .setup-container {
+    display: grid;
+    grid-template-columns: minmax(340px, 0.9fr) minmax(560px, 1.35fr);
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+}
+
 /* Logo */
 .logo {
     text-align: center;
     margin-bottom: 0;
+}
+
+#mode-screen .logo {
+    text-align: left;
 }
 
 .logo-icon {
@@ -226,6 +237,28 @@ body::after {
     margin-bottom: var(--spacing-xs);
 }
 
+#mode-screen .logo h1 {
+    font-size: clamp(3.2rem, 5vw, 4.25rem);
+    line-height: 0.9;
+    margin: var(--spacing-sm) 0 var(--spacing-md);
+}
+
+.logo-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(45, 212, 191, 0.28);
+    border-radius: var(--radius-full);
+    color: var(--accent-teal);
+    background: rgba(45, 212, 191, 0.07);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
 @keyframes gradientShift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -238,9 +271,15 @@ body::after {
     letter-spacing: 0.01em;
 }
 
+#mode-screen .tagline {
+    max-width: 360px;
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    line-height: 1.45;
+}
+
 /* Mode Selection */
 .mode-selection {
-    text-align: center;
+    text-align: left;
     width: 100%;
 }
 
@@ -248,32 +287,49 @@ body::after {
     font-size: 1rem;
     font-weight: 500;
     color: var(--text-muted);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
     text-transform: uppercase;
     letter-spacing: 0.15em;
 }
 
 .mode-cards {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
 }
 
 .mode-card {
     position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     width: 100%;
     min-width: 0;
-    min-height: 220px;
+    min-height: 0;
     cursor: pointer;
     transition: all var(--transition-normal);
-    text-align: center;
+    text-align: left;
     font-family: inherit;
     color: var(--text);
     overflow: hidden;
+}
+
+#mode-screen .mode-card {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--spacing-lg);
+    min-height: 118px;
+}
+
+#mode-screen .mode-card .mode-icon {
+    grid-row: 1 / span 2;
+}
+
+#mode-screen .mode-card h3,
+#mode-screen .mode-card p {
+    grid-column: 2;
 }
 
 .mode-card::before {
@@ -300,9 +356,16 @@ body::after {
 }
 
 .mode-card .mode-icon {
-    font-size: 2.75rem;
-    display: block;
-    margin-bottom: var(--spacing-sm);
+    font-size: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--border);
     transition: transform var(--transition-normal);
 }
 
@@ -318,7 +381,7 @@ body::after {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 0.2rem;
 }
 
 .mode-card p {
@@ -326,6 +389,51 @@ body::after {
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-wrap: anywhere;
+}
+
+.mode-card[data-mode="classic"] .mode-icon {
+    background: rgba(244, 114, 182, 0.10);
+    border-color: rgba(244, 114, 182, 0.22);
+}
+
+.mode-card[data-mode="timeline"] .mode-icon {
+    background: rgba(251, 191, 36, 0.10);
+    border-color: rgba(251, 191, 36, 0.22);
+}
+
+.mode-card[data-mode="buzzer"] .mode-icon {
+    background: rgba(45, 212, 191, 0.10);
+    border-color: rgba(45, 212, 191, 0.22);
+}
+
+.mode-card.is-disabled {
+    opacity: 0.62;
+}
+
+.mode-card.is-disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.mode-notice {
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    border: 1px solid rgba(251, 191, 36, 0.28);
+    border-radius: var(--radius-lg);
+    background: rgba(251, 191, 36, 0.10);
+    color: var(--text);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.mode-notice.info {
+    border-color: var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+}
+
+.mode-notice.hidden {
+    display: none;
 }
 
 /* Setup Form */
@@ -1578,6 +1686,14 @@ body::after {
    ================================ */
 
 @media (max-width: 768px) {
+    #mode-screen .setup-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: var(--spacing-lg);
+    }
+
     .setup-container {
         width: calc(100% - (2 * var(--spacing-lg)));
         max-width: 100%;
@@ -1595,6 +1711,25 @@ body::after {
     
     .logo-icon {
         font-size: 3.5rem;
+    }
+
+    #mode-screen .logo {
+        text-align: center;
+    }
+
+    #mode-screen .logo h1 {
+        font-size: clamp(2.6rem, 11vw, 4rem);
+        line-height: 1;
+    }
+
+    #mode-screen .tagline {
+        max-width: none;
+        margin: 0 auto;
+        font-size: 1rem;
+    }
+
+    .logo-kicker {
+        display: none;
     }
     
     .game-header {
@@ -1641,16 +1776,24 @@ body::after {
 
     .mode-cards {
         grid-template-columns: 1fr;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
     
     .mode-card {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-md);
         min-height: 0;
+    }
+
+    #mode-screen .mode-card {
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: var(--spacing-md);
+        min-height: 92px;
     }
     
     .mode-card .mode-icon {
-        font-size: 2.5rem;
+        width: 52px;
+        height: 52px;
+        font-size: 1.75rem;
     }
     
     .classic-stats {
@@ -1683,9 +1826,9 @@ body::after {
 @media (max-width: 480px) {
     .setup-container {
         width: calc(100% - (2 * var(--spacing-md)));
-        padding: var(--spacing-md) 0;
+        padding: var(--spacing-sm) 0;
         justify-content: flex-start;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
         overflow-x: hidden;
     }
 
@@ -1694,47 +1837,56 @@ body::after {
     }
 
     .logo h1 {
-        font-size: clamp(2.15rem, 12vw, 2.7rem);
+        font-size: clamp(2.05rem, 11vw, 2.45rem);
     }
 
     .logo-icon {
-        font-size: 3.1rem;
+        font-size: 2.75rem;
     }
 
     .tagline {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .mode-selection h2 {
         margin-bottom: var(--spacing-md);
         font-size: 0.82rem;
+        text-align: center;
     }
 
     .mode-card {
-        padding: var(--spacing-md);
+        padding: 0.68rem;
         border-radius: var(--radius-xl);
     }
 
+    #mode-screen .mode-card {
+        grid-template-columns: 46px minmax(0, 1fr);
+        min-height: 82px;
+    }
+
     .mode-card .mode-icon {
-        font-size: 2rem;
+        width: 46px;
+        height: 46px;
+        font-size: 1.3rem;
         margin-bottom: var(--spacing-xs);
     }
 
     .mode-card h3 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
     .mode-card p {
-        font-size: 0.82rem;
-        line-height: 1.45;
+        font-size: 0.76rem;
+        line-height: 1.35;
     }
 
     .join-section {
-        margin-top: var(--spacing-md);
+        margin-top: var(--spacing-sm);
     }
 
     .join-form {
         flex-direction: column;
+        gap: var(--spacing-xs);
     }
 
     .join-divider span {
@@ -1745,6 +1897,7 @@ body::after {
     .player-name-input,
     .join-btn {
         width: 100%;
+        padding: 0.85rem var(--spacing-md);
     }
     
     .timeline {

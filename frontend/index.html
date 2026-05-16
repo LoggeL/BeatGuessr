@@ -18,12 +18,14 @@
             <div class="setup-container">
                 <div class="logo">
                     <span class="logo-icon">🎵</span>
+                    <span class="logo-kicker">660+ Songs · 1960-2025 · Party-ready</span>
                     <h1>BeatGuessr</h1>
-                    <p class="tagline">Das ultimative Musik-Ratespiel!</p>
+                    <p class="tagline">Musik raten, Jahre sortieren oder mit dem Buzzer eskalieren.</p>
                 </div>
                 
                 <div class="mode-selection">
                     <h2>Spielmodus wählen</h2>
+                    <div id="mode-notice" class="mode-notice hidden" role="status" aria-live="polite"></div>
                     
                     <div class="mode-cards">
                         <button class="mode-card" data-mode="classic">
@@ -113,7 +115,7 @@
                 
                 <div class="rules">
                     <h3>Spielregeln</h3>
-                    <ul>
+                    <ul id="setup-rules-list">
                         <li>🎧 Ein Song wird abgespielt (30 Sekunden Vorschau)</li>
                         <li>📅 Rate, wo der Song zeitlich in deine Sammlung passt</li>
                         <li>✅ Richtig? Der Song wird deiner Timeline hinzugefügt</li>

@@ -13,6 +13,8 @@ class BeatGuessrApp {
         this.buzzerHostScreen = null;
         this.buzzerPlayerScreen = null;
         this.socket = null;
+        this.buzzerAvailable = false;
+        this.apiAvailable = false;
         this.songs = [];
         this.currentMode = null;
         
@@ -50,25 +52,47 @@ class BeatGuessrApp {
      * Initialize Socket.io connection
      */
     initSocket() {
+        this.setBuzzerAvailable(false);
+
+        if (window.location.hostname.endsWith('github.io')) {
+            console.log('Static GitHub Pages hosting detected; Buzzer mode disabled.');
+            return;
+        }
+
+        if (!this.apiAvailable) {
+            console.log('Backend API not available; Buzzer mode disabled.');
+            return;
+        }
+
+        if (typeof io === 'undefined') {
+            this.setBuzzerAvailable(false);
+            console.log('Socket.io client not available; Buzzer mode disabled.');
+            return;
+        }
+
         // Connect to the server (same host for production, or specify dev server)
         const socketUrl = window.location.origin;
         this.socket = io(socketUrl, {
             transports: ['websocket', 'polling'],
             reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000
+            reconnectionAttempts: 2,
+            reconnectionDelay: 1000,
+            timeout: 1500
         });
         
         this.socket.on('connect', () => {
             console.log('Socket connected:', this.socket.id);
+            this.setBuzzerAvailable(true);
         });
         
         this.socket.on('disconnect', () => {
             console.log('Socket disconnected');
+            this.setBuzzerAvailable(false);
         });
         
         this.socket.on('connect_error', (error) => {
             console.log('Socket connection error:', error);
+            this.setBuzzerAvailable(false);
         });
     }
 
@@ -82,12 +106,15 @@ class BeatGuessrApp {
             if (response.ok) {
                 const data = await response.json();
                 this.songs = data.songs || [];
+                this.apiAvailable = true;
                 console.log(`Loaded ${this.songs.length} songs from API`);
                 return;
             }
         } catch (e) {
             console.log('API not available, trying local file...');
         }
+
+        this.apiAvailable = false;
 
         // Fallback to local JSON file (for GitHub Pages)
         try {
@@ -335,9 +362,15 @@ class BeatGuessrApp {
         this.currentMode = mode;
         
         if (mode === 'buzzer') {
+            if (!this.isBuzzerReady()) {
+                this.showModeNotice('Buzzer braucht den Socket.IO-Server. Starte lokal den Flask-Server, dann ist der Modus verfügbar.', 'warning');
+                return;
+            }
+            this.hideModeNotice();
             // Buzzer mode - host flow
             this.startBuzzerHost();
         } else {
+            this.hideModeNotice();
             // Classic or Timeline - show setup screen
             this.showScreen('setup');
             this.setupScreen.configure(mode);
@@ -358,14 +391,19 @@ class BeatGuessrApp {
     joinBuzzerRoom() {
         const roomCode = document.getElementById('join-room-code').value.trim().toUpperCase();
         const playerName = document.getElementById('join-player-name').value.trim();
+
+        if (!this.isBuzzerReady()) {
+            this.showModeNotice('Beitreten geht nur, wenn der Buzzer-Server läuft.', 'warning');
+            return;
+        }
         
         if (!roomCode) {
-            alert('Bitte gib einen Raumcode ein.');
+            this.showModeNotice('Bitte gib einen Raumcode ein.', 'warning');
             return;
         }
         
         if (!playerName) {
-            alert('Bitte gib deinen Namen ein.');
+            this.showModeNotice('Bitte gib deinen Namen ein.', 'warning');
             return;
         }
         
@@ -489,7 +527,7 @@ class BeatGuessrApp {
                 this.gameScreen.show();
                 break;
             case 'classic':
-                this.classicScreen.show();
+                document.getElementById('classic-screen').classList.add('active');
                 break;
             case 'buzzer-host':
                 document.getElementById('buzzer-host-screen').classList.add('active');
@@ -501,6 +539,35 @@ class BeatGuessrApp {
                 document.getElementById('win-screen').classList.add('active');
                 break;
         }
+
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+
+    isBuzzerReady() {
+        return Boolean(this.socket && this.socket.connected);
+    }
+
+    setBuzzerAvailable(isAvailable) {
+        this.buzzerAvailable = isAvailable;
+        const buzzerCard = document.querySelector('.mode-card[data-mode="buzzer"]');
+        if (buzzerCard) {
+            buzzerCard.classList.toggle('is-disabled', !isAvailable);
+            buzzerCard.setAttribute('aria-disabled', String(!isAvailable));
+        }
+    }
+
+    showModeNotice(message, type = 'info') {
+        const notice = document.getElementById('mode-notice');
+        if (!notice) return;
+        notice.textContent = message;
+        notice.className = `mode-notice ${type}`;
+    }
+
+    hideModeNotice() {
+        const notice = document.getElementById('mode-notice');
+        if (!notice) return;
+        notice.className = 'mode-notice hidden';
+        notice.textContent = '';
     }
 }
 
