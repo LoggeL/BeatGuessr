@@ -88,9 +88,9 @@ Requires Spotify API credentials in the script.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Vanilla JavaScript, CSS3 with glassmorphism effects
-- **Backend** (optional): Flask, Python
-- **Audio**: Spotify 30-second previews
+- **Frontend**: Vanilla JavaScript (ES modules, no build step), modern dark CSS design system
+- **Backend** (optional, for Buzzer mode): Flask + Flask-SocketIO, Python
+- **Audio**: Spotify 30-second previews, WebAudio-synthesized sound effects
 - **Hosting**: GitHub Pages
 
 ---
@@ -99,18 +99,18 @@ Requires Spotify API credentials in the script.
 
 ```
 BeatGuessr/
-├── frontend/           # Static frontend (GitHub Pages)
-│   ├── index.html      # Main game page
-│   ├── css/style.css   # Colorful theme
-│   ├── data/songs.json # Song database
+├── frontend/                # Static frontend (GitHub Pages)
+│   ├── index.html           # App shell
+│   ├── css/style.css        # Design system (tokens, components, screens)
+│   ├── data/songs.json      # Song database
 │   └── js/
-│       ├── app.js      # Main application
-│       ├── game/       # Game logic (GameState, Player, SongCard)
-│       ├── audio/      # Audio player
-│       └── ui/         # Screen components
-├── backend/            # Optional Flask server
-├── scripts/            # Song scraping tools
-└── data/               # Source song data
+│       ├── main.js          # Bootstrap + screen router
+│       ├── lib/             # dom helpers, songs/deck, sfx, socket loader
+│       ├── components/      # player widget, vinyl, modal, scoreboard, confetti
+│       └── screens/         # home, setup, classic, timeline, buzzer host/player
+├── backend/                 # Optional Flask + Socket.IO server (Buzzer mode)
+├── scripts/                 # Song scraping tools
+└── data/                    # Source song data
 ```
 
 ---
